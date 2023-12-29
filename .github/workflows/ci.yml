@@ -1,5 +1,6 @@
 name: Docker images CI
 on:
+  push:
   workflow_dispatch:
   schedule:
     - cron: '*/10 * * * *'
@@ -16,17 +17,27 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      - name: Build docker image
+        uses: docker/build-push-action@v5
+        with:
+          file: Dockerfile
+          context: .
+          build-args: JAVA=${{ matrix.java }}
+
+  image_pulsar:
+    name: Termurin ${{ matrix.java }} (pulsar style)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['8', '11', '17', '21']
+
+    steps:
+      - uses: actions/checkout@v3
 
       - name: Build docker image
         uses: docker/build-push-action@v5
         with:
-          platforms: linux/amd64
-          file: Dockerfile
+          file: Dockerfile-pulsar
           context: .
-          push: false
-          build-args: |
-            JAVA=${{ matrix.java }}
+          build-args: JAVA=${{ matrix.java }}

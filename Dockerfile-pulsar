@@ -1,0 +1,28 @@
+# idea: https://github.com/adoptium/installer/issues/766#issuecomment-1856884963
+# reference: https://github.com/lhotari/pulsar/blob/c4737b349aea7b4862d96deb8697e415d5c2b1cc/docker/pulsar/Dockerfile#L48-L72
+
+FROM debian:bookworm-slim
+
+ARG JAVA=17
+
+# https://adoptium.net/installation/linux/
+RUN <<EOT
+set -eux
+export DEBIAN_FRONTEND="noninteractive"
+
+echo 'Acquire::http::Timeout "30";\nAcquire::http::ConnectionAttemptDelayMsec "2000";\nAcquire::https::Timeout "30";\nAcquire::https::ConnectionAttemptDelayMsec "2000";\nAcquire::ftp::Timeout "30";\nAcquire::ftp::ConnectionAttemptDelayMsec "2000";\nAcquire::Retries "15";' > /etc/apt/apt.conf.d/99timeout_and_retries
+apt-get update
+apt-get -y dist-upgrade
+apt-get -y install curl ca-certificates wget apt-transport-https
+
+mkdir -p /etc/apt/keyrings
+wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc
+echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
+
+apt-get update
+apt-get -y dist-upgrade
+apt-get install -y "temurin-${JAVA}-jdk"
+
+java -version
+javac -version
+EOT
