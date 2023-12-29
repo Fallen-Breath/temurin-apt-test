@@ -7,12 +7,14 @@ on:
 
 jobs:
   image:
-    name: Termurin ${{ matrix.java }}
+    name: JDK-${{ matrix.java }}, ${{ matrix.image_base }} ${{ matrix.pulsar_style == 'true' && ' (pulsar style)' || '' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        image_base: ['debian:bookworm', 'ubuntu:22.04']
         java: ['8', '11', '17', '21']
+        pulsar_style: ['false', 'true']
 
     steps:
       - uses: actions/checkout@v3
@@ -20,24 +22,8 @@ jobs:
       - name: Build docker image
         uses: docker/build-push-action@v5
         with:
-          file: Dockerfile
+          file: Dockerfile${{ matrix.pulsar_style == 'true' && '-pulsar' || '' }}
           context: .
-          build-args: JAVA=${{ matrix.java }}
-
-  image_pulsar:
-    name: Termurin ${{ matrix.java }} (pulsar style)
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        java: ['8', '11', '17', '21']
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Build docker image
-        uses: docker/build-push-action@v5
-        with:
-          file: Dockerfile-pulsar
-          context: .
-          build-args: JAVA=${{ matrix.java }}
+          build-args: |
+            IMAGE_BASE=${{ matrix.image_base }}
+            JAVA=${{ matrix.java }}

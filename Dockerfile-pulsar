@@ -1,7 +1,8 @@
 # idea: https://github.com/adoptium/installer/issues/766#issuecomment-1856884963
 # reference: https://github.com/lhotari/pulsar/blob/c4737b349aea7b4862d96deb8697e415d5c2b1cc/docker/pulsar/Dockerfile#L48-L72
 
-FROM debian:bookworm-slim
+ARG IMAGE_BASE
+FROM ${IMAGE_BASE}
 
 ARG JAVA=17
 

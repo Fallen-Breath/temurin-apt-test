@@ -1,4 +1,5 @@
-FROM debian:bookworm-slim
+ARG IMAGE_BASE
+FROM ${IMAGE_BASE}
 
 ARG JAVA=17
 
