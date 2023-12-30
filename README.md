@@ -6,5 +6,6 @@ Check the action page to see if the builds succeed or failed: https://github.com
 
 See also:
 
-- https://github.com/adoptium/adoptium-support/issues/554
+- https://github.com/adoptium/installer/issues/782
 - https://github.com/adoptium/installer/issues/766
+- https://github.com/adoptium/adoptium-support/issues/554
